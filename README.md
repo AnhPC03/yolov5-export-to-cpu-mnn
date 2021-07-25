@@ -9,12 +9,12 @@ Export processing consists of two steps:<br />
 🔎 MNN github repository in [here](https://github.com/alibaba/MNN).<br />
 
 ## Requirements
-👍 Python>=3.6.0 is required.
+👍 python>=3.6 is required.
 
 ## Installation
 ### Step 1: Convert Pytorch model weights to MNN model weights
 
-**If you don't want to install anything on your system then use this [Google Colab](https://colab.research.google.com/drive/1oZN9azdFyrlbzeVcGaqdddJ_YVatVTJJ?usp=sharing) (*Recommended*).**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1oZN9azdFyrlbzeVcGaqdddJ_YVatVTJJ?usp=sharing)
+**If you don't want to install anything on your system then use this [Google Colab](hhttps://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (*Recommended*).**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](hhttps://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (👍👍👍***Open and run on Google Chrome recommended***)
 
 **And if you want to perform the conversion on your system then follow bellow instructions:**
 
@@ -31,16 +31,18 @@ $ conda activate yolov5_conversion
 $ git clone https://github.com/AnhPC03/yolov5.git
 $ cd yolov5
 $ pip install -r requirements.txt
-$ bash export_mnn.sh 
+$ bash export_mnn.sh yolov5s 640
 ```
-✅ You can change the ***INPUT_SIZE*** and ***MODEL_NAME*** of your model in file ***export_mnn.sh***.<br />
+✅ With ***yolov5s*** is model name and ***640*** is input size of your Pytorch model.<br />
 ✅ After you run above commands, you will see **successfully message**. And you can find MNN converted model in path **weights/mnn/**.<br />
 ✅ The size of MNN model weight is much smaller than origin Pytorch model weight.<br />
 
 ### Step 2: Run the inference on Intel/AMD CPU
 ⚙️ **Setup**
 
-If you have created conda environment in conversion step then activated it (`$ conda activate yolov5_conversion`) and follow below steps. Otherwise I recommend you creat a conda environment (python version 3.6 recommended): 
+If you have created conda environment in conversion step then activated it (`$ conda activate yolov5_conversion`) and follow below steps.<br />
+📣 If you **don't want** to install conda environment into your system, feel free to **skip** below commands.<br />
+Otherwise I recommend you creat a conda environment (python version 3.6 recommended): 
 
 ```bash
 $ conda create -n yolov5_conversion python=3.6
@@ -54,8 +56,9 @@ $ git clone https://github.com/AnhPC03/yolov5-export-to-cpu-mnn.git
 $ cd yolov5-export-to-cpu-mnn
 $ pip install -r requirements.txt
 ```
+✅ Replace content of **classes.txt** file with your classes when you trained your model.<br />
 
-🎉 **Run inference**
+🎉 **Run inference**<br />
 🍻 *Result will be saved to **results/** folder*
 ```bash
 $ python inference/run_mnn_detector.py \
