@@ -14,7 +14,7 @@ Export processing consists of two steps:<br />
 ## Installation
 ### Step 1: Convert Pytorch model weights to MNN model weights
 
-**If you don't want to install anything on your system then use this [Google Colab](hhttps://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (*Recommended*).**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](hhttps://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (👍👍👍***Open and run on Google Chrome recommended***)
+**If you don't want to install anything on your system then use this [Google Colab](https://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (*Recommended*).**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](hhttps://colab.research.google.com/drive/1CpV_RTNJamhMpFLT4tW2gBHB41bWaACp?usp=sharing) (👍👍👍***Open and run on Google Chrome recommended***).
 
 **And if you want to perform the conversion on your system then follow bellow instructions:**
 
