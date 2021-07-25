@@ -1,110 +1,73 @@
-# Convert yolov5 models (verson 2) in `*.pt` format to `OpenVINO`
+# Export YOLOv5 to run on Intel/AMD CPU
+Export processing consists of two steps:
+1. Convert Pytorch model weights to MNN model weights.
+2. Run the inference on Intel/AMD CPU.
 
-## 1. Convert form PyTorch to ONNX
+## Documentation
+- MNN is a lightweight deep neural network inference engine.
+- You can find more information about MNN in [here](https://www.yuque.com/mnn/en/about).
+- MNN github repository in [here](https://github.com/alibaba/MNN).
 
-### 1.1. Requirements
+## Requirements
+- Python>=3.6.0 is required.
 
-Install following packages:
+## Installation
+### Step 1: Convert Pytorch model weights to MNN model weights
 
-```bash
-$ pip install torch==1.5.1 torchvision==0.6.1
-$ pip install onnx==1.7.0
-$ pip install onnxruntime==1.4.0
-$ pip3 install onnx-simplifier
-```
+**If you don't want to install anything on your system then use this [Google Colab](https://colab.research.google.com/drive/1oZN9azdFyrlbzeVcGaqdddJ_YVatVTJJ?usp=sharing) (*Recommended*).**  [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1oZN9azdFyrlbzeVcGaqdddJ_YVatVTJJ?usp=sharing)
 
-### 1.2. Conversion
+##### And if you want to perform the conversion on your system then follow bellow instructions:
 
-```bash
-$ export PYTHONPATH=$PYTHONPATH:$PWD
-$ INPUT_SIZE=320
-$ MODEL_NAME=yolov5xxs_${INPUT_SIZE}_face
-$ python conversion/export.py \
-    --weights weights/pytorch/${MODEL_NAME}.pt \
-    --img-size ${INPUT_SIZE} \
-    --batch-size 1 \
-    --out-dir weights/onnx
-```
-
-### 1.3. Verification
+I recommend create a new conda environment (python version 3.6 recommended): 
 
 ```bash
-$ python conversion/demo_onnx.py --display
+$ conda create -n yolov5_conversion python=3.6
+$ conda activate yolov5_conversion
 ```
 
-## 2. Convert from ONNX to OpenVINO
-
-### 2.1. OpenVINO installation
-
-Install `OpenVINO` 2020.4 in a `USER` account.
-
-### 2.2. Configuration
-
-Please use `python 3.6`
+Then run below commands and replace **yolov5s.pt** with your own model weights in path **weights/pt/** and also change **yolov5s.yaml** in path **models/** accordingly. 
 
 ```bash
-$ cd <INSTALL_DIR>/deployment_tools/model_optimizer/
-$ virtualenv -p python3 openvino --system-site-packages
-$ source openvino/bin/activate
-$ pip3 install -r requirements_onnx.txt
+$ git clone https://github.com/AnhPC03/yolov5.git
+$ cd yolov5
+$ pip install -r requirements.txt
+$ bash export_mnn.sh 
 ```
+You can change the ***INPUT_SIZE*** and ***MODEL_NAME*** of your model in file ***export_mnn.sh***.
+After you run above commands, you will see **successfully message**. And you can find MNN converted model in path **weights/mnn/**.
 
-### 2.3. Conversion
+### Step 2: Run the inference on Intel/AMD CPU
+##### Setup
 
-You may need to use [onnx simplifier](https://github.com/daquexian/onnx-simplifier) before converting to `OpenVINO`:
+If you have created conda environment in conversion step then activated it (`$ conda activate yolov5_conversion`) and follow below steps. Otherwise I recommend you creat a conda environment (python version 3.6 recommended): 
 
 ```bash
-$ INPUT_SIZE=320
-$ MODEL_NAME=yolov5xxs_${INPUT_SIZE}_face
-$ python -m onnxsim weights/onnx/${MODEL_NAME}.onnx weights/onnx/${MODEL_NAME}.onnx --input-shape 1,3,${INPUT_SIZE},${INPUT_SIZE}
+$ conda create -n yolov5_conversion python=3.6
+$ conda activate yolov5_conversion
 ```
 
-Activate the conversion env.:
+then follow below steps:
 
 ```bash
-$ cd <YOLOv5_INSTALL_DIR>
-$ source ~/intel/openvino/deployment_tools/model_optimizer/openvino/bin/activate
-$ source ~/intel/openvino/bin/setupvars.sh
+$ git clone https://github.com/AnhPC03/yolov5-export-to-cpu-mnn.git
+$ cd yolov5-export-to-cpu-mnn
+$ pip install -r requirements.txt
 ```
 
-Now, convert to `OpenVINO`:
-
+##### Run inference
+*Result will be saved to **results/** folder*
 ```bash
-$ INPUT_SIZE=320
-$ MODEL_NAME=yolov5xxs_${INPUT_SIZE}_face
-$ python ~/intel_2020R4/openvino/deployment_tools/model_optimizer/mo_onnx.py \
-    --input_model /Users/thanhnguyen/Documents/Sourcecodes/yolov5/weights/onnx/${MODEL_NAME}.onnx \
-    --output_dir /Users/thanhnguyen/Documents/Sourcecodes/yolov5/weights/openvino \
-    --input_shape="[1,3,${INPUT_SIZE},${INPUT_SIZE}]" \
-    --data_type FP16 \
-    --scale 255 \
-    --reverse_input_channels
-    # --log_level DEBUG
+$ python inference/run_mnn_detector.py \
+            --weights path/to/your/mnn/weight \
+            --source 0  # webcam
+                     file.jpg  # image 
+                     file.mp4  # video
+                     path/  # directory
+                     'https://youtu.be/NUsoVlDFqZg'  # YouTube video
+                     'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
 ```
-
-### 2.4. Verification
-
+With *path/to/your/mnn/weight* is path to MNN model weight which you just converted in the above step.
+For example: my MNN model weight in ***yolov5-export-to-cpu-mnn/weights/yolov5s.mnn***. Then I run inference on images in ***inference/images/*** folder as below:
 ```bash
-$ python conversion/demo_openvino_video.py --display
+$ python inference/run_mnn_detector.py --weights weights/yolov5s.mnn --source inference/images
 ```
-
-## 3. Evaluate OpenVINO models
-
-```bash
-# Remove cached labels
-$ rm /Users/thanhnguyen/Documents/Datasets/MergedMaskFace_YOLO/labels/*.cache
-$ INPUT_SIZE=320
-$ python conversion/eval.py \
-    --model-type openvino \
-    --model-xml weights/openvino/yolov5xxs_${INPUT_SIZE}_face.xml \
-    --data ./data/mergedmaskface.yaml \
-    --batch 1 \
-    --img ${INPUT_SIZE} \
-    --task 'test' \
-    --device HDDL \
-    --conf-thres 0.3 \
-    --verbose
-```
-
-
-
