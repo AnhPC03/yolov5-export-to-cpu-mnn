@@ -41,7 +41,7 @@ $ bash export_mnn.sh yolov5s 640
 ⚙️ **Setup**
 
 If you have created conda environment in conversion step then activated it (`$ conda activate yolov5_conversion`) and follow below steps.<br />
-📣 If you **don't want** to install conda environment into your system, feel free to **skip** below commands.<br />
+📣 If you **don't want** to install conda environment into your system, feel free to **skip** these below commands.<br />
 Otherwise I recommend you creat a conda environment (python version 3.6 recommended): 
 
 ```bash
@@ -49,14 +49,14 @@ $ conda create -n yolov5_conversion python=3.6
 $ conda activate yolov5_conversion
 ```
 
-➡️ Then follow below steps:
+➡️ Follow below steps to install minimum required environment for converting Pytorch to MNN model weight file:
 
 ```bash
 $ git clone https://github.com/AnhPC03/yolov5-export-to-cpu-mnn.git
 $ cd yolov5-export-to-cpu-mnn
 $ pip install -r requirements.txt
 ```
-✅ Replace content of **classes.txt** file with your classes when you trained your model.<br />
+✅ Replace content of **classes.txt** file with your classes when you trained your Pytorch model.<br />
 
 🎉 **Run inference**<br />
 🍻 *Result will be saved to **results/** folder*
