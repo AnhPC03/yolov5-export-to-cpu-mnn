@@ -19,7 +19,7 @@ Export processing consists of two steps:<br />
 
 **And if you want to perform the conversion on your system then follow bellow instructions:**
 
-📣 I recommend create a new conda environment (python version 3.6 recommended): 
+📣 I recommend to create a new conda environment (python version 3.6 recommended): 
 
 ```bash
 $ conda create -n yolov5_conversion python=3.6
@@ -36,7 +36,8 @@ $ bash export_mnn.sh yolov5s 640
 ```
 ✅ With ***yolov5s*** is model name and ***640*** is input size of your Pytorch model.<br />
 ✅ After you run above commands, you will see **successfully message**. And you can find MNN converted model in path **weights/mnn/**.<br />
-✅ The size of MNN model weight is much smaller than origin Pytorch model weight.<br />
+✅ Attention about model quantization: The size of MNN model weight is much smaller than origin Pytorch model weight because of using `--weightQuantBits 8` in **export_mnn.sh** file. This reduced model size while also improving CPU and hardware accelerator latency, with little degradation in model accuracy. If you want to keep fully model accuracy, feel free to delete `--weightQuantBits 8` in **export_mnn.sh** file.<br />
+✅ Because of running on Intel/AMD CPU, so I decided to quantize my model.<br />
 
 ### Step 2: Run the inference on Intel/AMD CPU
 ⚙️ **Setup**
@@ -46,8 +47,8 @@ If you have created conda environment in conversion step then activated it (`$ c
 Otherwise I recommend you creat a conda environment (python version 3.6 recommended): 
 
 ```bash
-$ conda create -n yolov5_conversion python=3.6
-$ conda activate yolov5_conversion
+$ conda create -n cpu_mnn python=3.6
+$ conda activate cpu_mnn
 ```
 
 ➡️ Follow below steps to install minimum required environment for converting Pytorch to MNN model weight file:
