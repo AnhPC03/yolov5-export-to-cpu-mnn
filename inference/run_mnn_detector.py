@@ -26,8 +26,8 @@ def build_argparser():
     parser.add_argument('--out-dir', type=str, default='results', help='Output dir')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
-    parser.add_argument('--display', action='store_true', default=True, help='display image, webcam while inference')
-    parser.add_argument('--save', action='store_true', default=True, help='save image')
+    parser.add_argument('--nodisplay', action='store_true', default=False, help='do not display image, webcam while inference')
+    parser.add_argument('--nosave', action='store_true', default=False, help='do not save image')
     opt = parser.parse_args()
     return opt
 
@@ -63,14 +63,14 @@ def detect_video(vid,
                 conf_thres,
                 iou_thres, 
                 video_name, 
-                save=True, 
-                display=False
+                nosave=False, 
+                nodisplay=True
                 ):
-    if display:
+    if not nodisplay:
         winname = "visualizer"
         cv2.namedWindow(winname, cv2.WINDOW_NORMAL)
     
-    if save:
+    if not nosave:
         width, height, fps, _ = get_vid_properties(vid)
         vid_writer = VideoWriter(width, height, fps, out_dir, video_name)
 
@@ -97,17 +97,17 @@ def detect_video(vid,
             (0, 0, 255),
         )
 
-        if save:
+        if not nosave:
             vid_writer.write(frame)
 
-        if display:
+        if not nodisplay:
             frame_show = imutils.resize(frame, width=1280)
             cv2.imshow(winname, frame_show)
             if cv2.waitKey(30) & 0xFF == ord("q"):
                 break
 
     vid.release()
-    if save:
+    if not nosave:
         vid_writer.release()
         print(f"Video was saved in {out_dir}")
 
@@ -117,8 +117,8 @@ def main(weights='yolov5s.mnn',  # model.mnn path(s)
         out_dir="results", # output result
         conf_thres=0.25,  # confidence threshold
         iou_thres=0.45,  # NMS IOU threshold
-        display=True, # display webcam while inference
-        save=False, # save image
+        nodisplay=False, # display webcam while inference
+        nosave=False, # save image
         ):
     interpreter = MNN.Interpreter(weights)
     session = interpreter.createSession()
@@ -128,12 +128,12 @@ def main(weights='yolov5s.mnn',  # model.mnn path(s)
         input_tensor = interpreter.getSessionInput(session)
         image = detect_image(image, interpreter, session, input_tensor, img_size, conf_thres, iou_thres)
         
-        if save:
+        if not nosave: # if save
             path_img_out = f"{out_dir}/{source.split('/')[-1]}"
             cv2.imwrite(path_img_out, image)
             print(f"Image was saved in {out_dir}")
         
-        if display:
+        if not nodisplay: # if display
             winname = "visualizer"
             cv2.namedWindow(winname, cv2.WINDOW_NORMAL)
             frame_show = imutils.resize(image, width=1280)
@@ -143,7 +143,7 @@ def main(weights='yolov5s.mnn',  # model.mnn path(s)
     
     elif os.path.isdir(source):
         images = os.listdir(source)
-        if save:
+        if not nosave:
             output_dir_name = source.split('/')[-1]
             output_dir_name_ = f'{out_dir}/{output_dir_name}'
             if not os.path.exists(output_dir_name_):
@@ -155,17 +155,17 @@ def main(weights='yolov5s.mnn',  # model.mnn path(s)
             input_tensor = interpreter.getSessionInput(session)
             image = detect_image(image, interpreter, session, input_tensor, img_size, conf_thres, iou_thres)
             
-            if save:
+            if not nosave:
                 path_img_out = f"{output_dir_name_}/{image_file}"
                 cv2.imwrite(path_img_out, image)
-        if save:    
+        if not nosave:    
             print(f"All images were saved in {output_dir_name_}")
     
     elif source.endswith('.mp4'):
         video_name = source.split('/')[-1].split('.')[0]
         vid = cv2.VideoCapture(source)
         input_tensor = interpreter.getSessionInput(session)
-        detect_video(vid, interpreter, session, input_tensor, out_dir, img_size, conf_thres, iou_thres, video_name, save, False)
+        detect_video(vid, interpreter, session, input_tensor, out_dir, img_size, conf_thres, iou_thres, video_name, nosave, True)
     
     elif source.isnumeric() or source.lower().startswith(('rtsp://', 'rtmp://', 'http://', 'https://')):
         if source.isnumeric():
@@ -173,7 +173,7 @@ def main(weights='yolov5s.mnn',  # model.mnn path(s)
         else:
             vid = cv2.VideoCapture(source)
         input_tensor = interpreter.getSessionInput(session)
-        detect_video(vid, interpreter, session, input_tensor, out_dir, img_size, conf_thres, iou_thres, "webcam_captured", save, True)
+        detect_video(vid, interpreter, session, input_tensor, out_dir, img_size, conf_thres, iou_thres, "webcam_captured", nosave, False)
 
 if __name__ == "__main__":
     opt = build_argparser()
