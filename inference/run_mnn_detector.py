@@ -37,8 +37,13 @@ def detect_image(image, interpreter, session, input_tensor, img_size, conf_thres
     
     input_tensor.copyFrom(tmp_input)
     interpreter.runSession(session)
-    output_ori = interpreter.getSessionOutput(session, "output").getNumpyData()
-    detections = nms(output_ori, conf_thres=conf_thres, iou_thres=iou_thres)
+    # output_ori = interpreter.getSessionOutput(session, "output").getNumpyData()
+    # detections = nms(output_ori, conf_thres=conf_thres, iou_thres=iou_thres)
+    output_ori = interpreter.getSessionOutput(session, "output")
+    output_ori_shape = output_ori.getShape()
+    output = MNN.Tensor(output_ori_shape, MNN.Halide_Type_Float, np.zeros_like(output_ori.getData()), MNN.Tensor_DimensionType_Caffe,)
+    output_ori.copyToHostTensor(output)
+    detections = nms(output.getData(), conf_thres=conf_thres, iou_thres=iou_thres)
     if detections[0] is not None:
         draw_boxes(
             image,
