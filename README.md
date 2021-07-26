@@ -71,6 +71,7 @@ $ python inference/run_mnn_detector.py \
                      'rtsp://example.com/media.mp4'  # RTSP, RTMP, HTTP stream
 ```
 ✅ With *path/to/your/mnn/weight* is path to MNN model weight which you just converted in the above step.<br />
+✅ You can use --nodisplay to do not display image or webcam while inference. Or --nosave to do not save inference results.<br />
 ✅ **For example**: my MNN model weight in ***yolov5-export-to-cpu-mnn/weights/yolov5s.mnn***. Then I run inference on images in ***inference/images/*** folder as below:
 ```bash
 $ python inference/run_mnn_detector.py --weights weights/yolov5s.mnn --source inference/images
