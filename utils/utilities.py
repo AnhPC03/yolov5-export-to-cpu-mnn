@@ -3,12 +3,11 @@ import numpy as np
 import time
 import os
 
-with open("classes.txt", 'r') as read_classes:
-    classes = read_classes.readlines()
-    class_names = []
-    for class_ in classes:
-        class_names.append(class_.strip())
-
+def get_classes_list():
+    with open('classes.txt', 'r') as read_classes:
+        classes_ = read_classes.readlines()
+        classes = [x.strip() for x in classes_]
+    return classes
 
 def preprocess(image_src, input_height, input_width, nchw_shape=True):
     in_image_src, _, _ = resize(image_src, (input_width, input_height))
@@ -151,6 +150,20 @@ def py_cpu_nms(dets, scores, thresh):
     keep = np.array(keep)
     return keep
 
+def compute_iou(box1, box2):
+    bb_intersect = [max(box1[0], box2[0]), max(box1[1], box2[1]), min(box1[2], box2[2]), min(box1[3], box2[3])]
+    intersect_width = bb_intersect[2] - bb_intersect[0]
+    intersect_height = bb_intersect[3] - bb_intersect[1]
+    if intersect_width > 0 and intersect_height > 0:
+        intersect_area = intersect_width * intersect_height
+        # compute overlap (IoU) = area of intersection / area of union
+        union_area = (box1[2] - box1[0]) * (box1[3] - box1[1]) \
+                    + (box2[2] - box2[0]) * (box2[3] - box2[1]) \
+                    - intersect_area
+        iou = intersect_area / union_area
+        return iou
+    else:
+        return -1
 
 def xywh2xyxy(x):
     # Convert nx4 boxes from [x, y, w, h] to [x1, y1, x2, y2] where xy1=top-left, xy2=bottom-right

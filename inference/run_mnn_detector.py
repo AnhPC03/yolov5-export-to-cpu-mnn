@@ -10,7 +10,7 @@ import numpy as np
 from argparse import ArgumentParser
 
 from utils.utilities import (
-    class_names,
+    get_classes_list,
     draw_boxes,
     nms,
     preprocess,
@@ -18,11 +18,13 @@ from utils.utilities import (
     VideoWriter
 )
 
+class_names = get_classes_list()
+
 def build_argparser():
     parser = ArgumentParser()
     parser.add_argument('--weights', type=str, default='weights/yolov5s.mnn', help='model.mnn path(s)')
     parser.add_argument('--source', type=str, default='inference/images', help='file/dir/URL, 0 for webcam')
-    parser.add_argument('--img-size', '--img', '--imgsz', type=int, default=640, help='inference size (pixels)')
+    parser.add_argument('--img-size', '--img', '--imgsz', type=int, default=320, help='inference size (pixels)')
     parser.add_argument('--out-dir', type=str, default='results', help='Output dir')
     parser.add_argument('--conf-thres', type=float, default=0.25, help='confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.45, help='NMS IoU threshold')
